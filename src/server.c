@@ -6,30 +6,19 @@
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:23 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/14 16:01:57 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/15 15:42:21 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	ft_free(char *str)
+void	ft_free(unsigned char **str)
 {
-	free(str);
-	str = NULL;
+	free(*str);
+	*str = NULL;
 }
 
-// void	sig_handler(int sig, siginfo_t *info, void *ucontext)
-// {	
-// 	(void)*ucontext;
-	
-// 	if (sig == SIGUSR1)
-// 		printf("Good\n");	
-// 	if (sig == SIGUSR2)
-// 		printf("Bad\n");
-// 	// ft_memset(&info, 0, sizeof(siginfo_t));
-// }
-
-char	bin2char(char *str)
+char	bin2char(unsigned char *str)
 {
 	int	bin;
 	int	base;
@@ -56,17 +45,16 @@ char	bin2char(char *str)
 
 void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 {
-	static int 	base;
-	int 	i;
-	// static int 	j;
-	static char	*str;
-	static char bin;
-	char		c;
+	static unsigned char	*str;
+	static unsigned char	*str2;
+	int 					i;
+	int						j;
+	unsigned int			c;
+	unsigned int			len;
 	
-	// printf("%d\n", i);
 	if (!str)
 	{
-		str = calloc(9, sizeof(*str));
+		str = calloc((8 + 1), sizeof(*str));
 		i = 0;
 	}
 	if (sig == SIGUSR1)
@@ -77,10 +65,23 @@ void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 	if (i == 8)
 	{
 		str[i] = '\0';
-		i = 0;
 		c = bin2char(str);
-		printf("c:%c\n", c);
-		// free(str);
+		if (!str2)
+		{
+			len = c;
+			// printf("len:%d\n", len);
+			str2 = ft_calloc(len + 1, sizeof(*str2));
+			j = 0;
+		}
+		// ft_putchar_fd(c, 1);
+		str2[j] = c;
+		j++;
+		if (c == '\0')
+		{
+			printf("%s", str2);
+			ft_free(&str2);
+		}
+		ft_free(&str);
 	}
 }
 
