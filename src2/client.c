@@ -6,34 +6,42 @@
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:18 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/15 16:04:49 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/18 17:55:27 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-// void	char2bin(unsigned int i, int pid, siginfo_t *info)
-// {
-// 	int	alex;
+void	uint2bin(unsigned long int len, int pid, siginfo_t *info)
+{
+	int	i;
 
-// 	alex = 31;
-// 	while (alex >= 0)
-// 	{
-// 		if ((i >> alex) & 1)
-// 		{
-// 			if (kill(pid, SIGUSR1) == -1)
-// 				ft_putchar_fd('1', 1);
-// 			usleep(100);
-// 		}
-// 		else
-// 		{
-// 			if (kill(pid, SIGUSR2) == -1)
-// 				ft_putchar_fd('0', 1);
-// 			usleep(100);				
-// 		}
-// 		alex--;
-// 	}
-// }
+	i = 31;
+	while (i >= 0)
+	{
+		if ((len >> i) & 1)
+		{
+			if (kill(pid, SIGUSR1) == -1)
+			{
+				printf("Signal failed\n");
+				exit(0);
+			}
+			printf("1");
+			usleep(100);
+		}
+		else
+		{
+			if (kill(pid, SIGUSR2) == -1)
+			{
+				printf("Signal failed\n");
+				exit(0);
+			}
+			printf("0");
+			usleep(100);				
+		}
+		i--;
+	}
+}
 
 
 void	char2bin(char c, int pid, siginfo_t *info)
@@ -46,13 +54,19 @@ void	char2bin(char c, int pid, siginfo_t *info)
 		if ((c >> i) & 1)
 		{
 			if (kill(pid, SIGUSR1) == -1)
+			{
 				printf("Signal failed\n");
+				exit(0);
+			}
 			usleep(100);
 		}
 		else
 		{
 			if (kill(pid, SIGUSR2) == -1)
+			{
 				printf("Signal failed\n");
+				exit(0);
+			}
 			usleep(100);				
 		}
 		i--;
@@ -62,10 +76,10 @@ void	char2bin(char c, int pid, siginfo_t *info)
 void	send_message(char *str, pid_t pid, siginfo_t *info)
 {
 	int j;
-	int len;
+	unsigned long int len;
 	
-	len = ft_strlen(str);
-	char2bin(len, pid, info);
+	len = ft_strlen(str) + 1;
+	uint2bin(len, pid, info);
 	j = 0;
 	while (str[j])
 	{

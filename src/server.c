@@ -6,7 +6,7 @@
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:23 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/15 15:42:21 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/18 18:22:14 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,75 +14,74 @@
 
 void	ft_free(unsigned char **str)
 {
-	free(*str);
-	*str = NULL;
+	if (str)
+	{
+		free(*str);
+		*str = NULL;
+	}
 }
 
-char	bin2char(unsigned char *str)
-{
-	int	bin;
-	int	base;
-	int	i;
-	int	j;
+
+// char	bin2uint(unsigned char *str)
+// {
 	
-	i = 8;
-	j = 0;
-	base = 1;
-	bin = 0;
-	// printf("%d\n", i);
-	str[i] = '\0';
-	i--;
-	while (i >= 0)
-	{
-		if (str[i] == '1') 
-			bin += base;
-		base = base * 2;
-		// printf("char%d:%c\n", i, str[i]);
-		i--;
-	}
-	return (bin);
+// 	return (bin);
+// }
+
+void	findstrlen(unsigned char *str, int sig, int j)
+{
+	if (sig == SIGUSR1)
+		str[j] = (str[j] << 1) | 1;
+	else
+		str[j] = (str[j] << 1) | 0;
 }
 
 void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 {
 	static unsigned char	*str;
-	static unsigned char	*str2;
-	int 					i;
+	static unsigned char	*str2 = 0;
+	unsigned long int 		i;
 	int						j;
-	unsigned int			c;
-	unsigned int			len;
+	unsigned long int		len;
 	
-	if (!str)
+	if(!str)
 	{
-		str = calloc((8 + 1), sizeof(*str));
+		str = ft_calloc(1 + 1, sizeof(unsigned long int));
+		if (!str)
+			ft_free(&str);
+		i = 0;
+		j = 0;
+	}
+	if (!str2)
+		findstrlen(str, sig, j);
+	if (str2)
+	{
+		findstrlen(str2, sig, j);
+		if (i == 8)
+		{
+			if (str2)
+			{
+				if (str2[j] == '\0')
+				{
+					printf("%s\n", str2);
+					ft_free(&str2);
+					ft_free(&str);
+				}
+			}
+			i = 0;
+			j++;
+		}
+	}
+	if (i == 31)
+	{
+		len = str[0];
+		str2 = ft_calloc(len + 1, sizeof(*str2));
+		if (!str2)
+			ft_free(&str2);		
+		printf("lenf:%lu\n", len);
 		i = 0;
 	}
-	if (sig == SIGUSR1)
-		str[i] = '1';
-	else if (sig == SIGUSR2)
-		str[i] = '0';
 	i++;
-	if (i == 8)
-	{
-		str[i] = '\0';
-		c = bin2char(str);
-		if (!str2)
-		{
-			len = c;
-			// printf("len:%d\n", len);
-			str2 = ft_calloc(len + 1, sizeof(*str2));
-			j = 0;
-		}
-		// ft_putchar_fd(c, 1);
-		str2[j] = c;
-		j++;
-		if (c == '\0')
-		{
-			printf("%s", str2);
-			ft_free(&str2);
-		}
-		ft_free(&str);
-	}
 }
 
 
