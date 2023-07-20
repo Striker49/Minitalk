@@ -6,11 +6,17 @@
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:18 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/18 17:55:27 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/20 14:04:52 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+void	sig_handler(int sig, siginfo_t *info, void *ucontext)
+{
+	if (sig == SIGUSR1)
+		printf("Signal transmitted successfully\n");
+}
 
 void	uint2bin(unsigned long int len, int pid, siginfo_t *info)
 {
@@ -26,7 +32,6 @@ void	uint2bin(unsigned long int len, int pid, siginfo_t *info)
 				printf("Signal failed\n");
 				exit(0);
 			}
-			printf("1");
 			usleep(100);
 		}
 		else
@@ -36,7 +41,6 @@ void	uint2bin(unsigned long int len, int pid, siginfo_t *info)
 				printf("Signal failed\n");
 				exit(0);
 			}
-			printf("0");
 			usleep(100);				
 		}
 		i--;
@@ -97,10 +101,18 @@ int main(int argc, char **argv)
 	int					pid;
 
 	if (argc < 3)
+	{
 		printf("ERROR\nMissing arguments");
+		exit (0);
+	}
 	if (argc > 3)
+	{
 		printf("ERROR\nToo many arguments");
-		
+		exit (0);
+	}
+	sa.sa_sigaction = &sig_handler;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	pid = ft_atoi(argv[1]);
 	send_message(argv[2], pid, &info);
     return (0);
