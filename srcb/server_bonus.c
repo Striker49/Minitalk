@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   server_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:23 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/24 17:25:49 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/24 16:40:16 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,13 @@ unsigned char	*string(int sig, siginfo_t *info, unsigned char *str2)
 		i = 0;
 		j = 0;
 	}
-	bitshift(str2, sig, j);
+	bitshiftb(str2, sig, j);
 	if (i == 8)
 	{
 		if (str2[j] == '\0')
 		{
 			printf("%s\n", str2);
+			kill(info->si_pid, SIGUSR1);
 			return (NULL);
 		}
 		i = 0;
@@ -48,19 +49,19 @@ unsigned long int	findstrlen(int sig, siginfo_t *info)
 	int						spid;
 
 	if (info->si_pid != spid)
-		i = (ft_free(&str), 0);
+		i = (ft_freeb(&str), 0);
 	if (!str)
 	{
 		str = ft_calloc(1 + 1, sizeof(*str));
 		if (!str)
-			return (ft_free(&str), 0);
+			return (ft_freeb(&str), 0);
 		i = 0;
 	}
-	bitshift(str, sig, 0);
+	bitshiftb(str, sig, 0);
 	if (i == 31)
 	{
 		len = str[0];
-		ft_free(&str);
+		ft_freeb(&str);
 		return (len);
 	}
 	i++;
@@ -75,7 +76,7 @@ void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 	int						spid;
 
 	if (info->si_pid != spid)
-		ft_free(&str2);
+		ft_freeb(&str2);
 	if (!str2)
 		len = findstrlen(sig, info);
 	if (len != 0)
@@ -84,7 +85,7 @@ void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 		{
 			str2 = ft_calloc(len + 1, sizeof(*str2));
 			if (!str2)
-				return (ft_free(&str2));
+				return (ft_freeb(&str2));
 		}
 	}
 	if (str2 && len != 0)
