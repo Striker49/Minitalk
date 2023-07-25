@@ -6,7 +6,7 @@
 /*   By: seroy <seroy@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/27 14:31:23 by seroy             #+#    #+#             */
-/*   Updated: 2023/07/24 16:40:16 by seroy            ###   ########.fr       */
+/*   Updated: 2023/07/25 11:45:39 by seroy            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ unsigned char	*string(int sig, siginfo_t *info, unsigned char *str2)
 	static int	j = 0;
 	int			spid;
 
-	if (spid != info->si_pid)
+	if (spid != info->si_pid && info->si_pid != 0)
 	{
 		i = 0;
 		j = 0;
@@ -42,28 +42,21 @@ unsigned char	*string(int sig, siginfo_t *info, unsigned char *str2)
 
 unsigned long int	findstrlen(int sig, siginfo_t *info)
 {
-	static unsigned char	*str = 0;
 	static int				i = 0;
-	int						j;
 	unsigned long int		len;
 	int						spid;
 
-	if (info->si_pid != spid)
-		i = (ft_freeb(&str), 0);
-	if (!str)
+	if (info->si_pid != spid && info->si_pid != 0)
 	{
-		str = ft_calloc(1 + 1, sizeof(*str));
-		if (!str)
-			return (ft_freeb(&str), 0);
 		i = 0;
+		len = 0;
 	}
-	bitshiftb(str, sig, 0);
+	if (sig == SIGUSR1)
+		len = (i << 1) | 1;
+	else
+		len = (i << 1) | 0;
 	if (i == 31)
-	{
-		len = str[0];
-		ft_freeb(&str);
 		return (len);
-	}
 	i++;
 	spid = info->si_pid;
 	return (0);
@@ -75,8 +68,11 @@ void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 	unsigned long int		len;
 	int						spid;
 
-	if (info->si_pid != spid)
+	if (info->si_pid != spid && info->si_pid != 0)
+	{
 		ft_freeb(&str2);
+		len = 0;
+	}
 	if (!str2)
 		len = findstrlen(sig, info);
 	if (len != 0)

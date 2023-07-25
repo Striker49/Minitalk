@@ -6,7 +6,7 @@
 #    By: seroy <seroy@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/27 14:22:44 by seroy             #+#    #+#              #
-#    Updated: 2023/07/24 17:31:51 by seroy            ###   ########.fr        #
+#    Updated: 2023/07/25 08:46:10 by seroy            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -117,7 +117,7 @@ fclean: clean
 	$(RM) $(NAME) $(NAME2) $(NAME_BONUS) $(NAME_BONUS2)
 	make -C $(LIBFTDIR) fclean
 
-re: fclean
+re: fclean all
 
 .PHONY:
 	fclean re bonus all
